@@ -1,9 +1,18 @@
+// TODO: Day and night cycle
+// TODO: Cars have a color and a taillight
+// TODO: Cars leave a space between
+// TODO: Traffic lights are only 1
+// TODO: Head/taillights glow brighter at night
+// TODO: Do we even need FastLED.show()? The new ones don't have it, but they work?!
+// TODO: Hearbeat mode
+// TODO: Get rid of my clear and use FastLED.clear()?
+
 #include <IRremoteInt.h>
 #include <IRremote.h>
 #include <FastLED-3.1.3\FastLED.h>
 
 // For debugging, uncomment this line
-//#define GOFAST
+#define GOFAST
 
 // LED OBJECTS
 #define NUM_LEDS 50
@@ -11,7 +20,7 @@
 int colornumber = 1;
 
 #ifdef GOFAST
-#define DELAY_TIME 5
+#define DELAY_TIME 2
 #else
 #define DELAY_TIME 30
 #endif
@@ -28,6 +37,7 @@ decode_results results;      // create instance of 'decode_results'
 
 // UTILITY OBJECTS
 char debugString[1024];
+int dimCounter;
 
 void setup()
 {
@@ -39,9 +49,8 @@ void setup()
 	//Serial.println("IR Receiver Button Decode");
 	//irrecv.enableIRIn(); // Start the receiver
 	dim();
+	dimCounter = 4;
 }
-
-//int shutoffcounter = 100;
 
 void loop()
 {
@@ -50,27 +59,48 @@ void loop()
 	//	exit(0);
 	//}
 
-	// Hostile streetlights
-	doCityStreet();
-
-	// Random color flickering
-	doRando();
-
-	// Fibonacci march
-	doFibonacciMarch();
-
-	// Boolean Sort
-	doSwapSort();
-
-	// Man of the hour!
-	doPacMan();
-	dim();
-
+	switch (random8(0, 5)) {
+	case 0:
+		// Hostile streetlights
+		Serial.println("Doing street");
+		doCityStreet();
+		break;
+	case 1:
+		// Random color flickering
+		Serial.println("Doing rando");
+		doRando();
+		break;
+	case 2:
+		// Fibonacci march
+		Serial.println("Doing Fib");
+		doFibonacciMarch();
+		break;
+	case 3:
+		// Boolean Sort
+		Serial.println("Doing Swap sort");
+		doSwapSort();
+		break;
+	case 4:
+		// Man of the hour!
+		Serial.println("Doing Pac Man");
+		doPacMan();
+		break;
+	}
+	Serial.println("Dim counter then brightness, twice:");
+	Serial.println(dimCounter);
+	Serial.println(globalBrightness);
+	if (!--dimCounter) {
+		dimCounter = 4;
+		dim();
+	}
+	Serial.println(dimCounter);
+	Serial.println(globalBrightness);
 }
 
 void dim() {
 	globalBrightness--;
 	if (globalBrightness <= 0) {
+		Serial.println("Done! Clearingout!");
 		clear();
 		exit(0);
 	}
@@ -91,7 +121,7 @@ enum TLColor {
 #define CAR_FRAME_TIME 125
 #define NUM_OF_TRAFFIC_LIGHTS 6
 #ifdef GOFAST
-#define TOTAL_DURATION 5000
+#define TOTAL_DURATION 2000
 #else
 #define TOTAL_DURATION 30000
 #endif
@@ -113,7 +143,6 @@ void doCityStreet() {
 	int i;
 	for (i = 0; i < NUM_OF_TRAFFIC_LIGHTS; i++) {
 		lightTimer[i] = random(0, RED_DURATION + YELLOW_DURATION + GREEN_DURATION);
-		Serial.println(lightTimer[i]);
 	}
 	long duration = TOTAL_DURATION;
 	int carDelay = random(CAR_MIN_SPAWN, CAR_MAX_SPAWN);
@@ -204,8 +233,8 @@ void drawLights() {
 **********************************************/
 
 #ifdef GOFAST
-#define PACMAN_APPEAR_DELAY 10
-#define PACMAN_MOVE_SPEED 5
+#define PACMAN_APPEAR_DELAY 4
+#define PACMAN_MOVE_SPEED 2
 #else
 #define PACMAN_APPEAR_DELAY 500
 #define PACMAN_MOVE_SPEED 100
@@ -430,7 +459,7 @@ void doPacMan() {
 **********************************************/
 
 #ifdef GOFAST
-#define SWAPSORT_DELAY 10
+#define SWAPSORT_DELAY 2
 #else
 #define SWAPSORT_DELAY 250
 #endif 
@@ -476,7 +505,7 @@ void doSwapSort() {
  *
  **********************************************/
 #ifdef GOFAST
-#define FIB_DELAY 10
+#define FIB_DELAY 2
 #else 
 #define FIB_DELAY 333
 #endif
@@ -566,7 +595,7 @@ void shiftDown() {
 	{
 		leds[i] = leds[i + 1];
 	}
-	leds[NUM_LEDS] = CRGB::Black;
+	leds[NUM_LEDS - 1] = CRGB::Black;
 }
 
 void shiftUp() {
@@ -603,6 +632,7 @@ void clear() {
 	fill_solid(leds, NUM_LEDS, CRGB::Black);
 }
 
+// TODO This is comPLETEly unnecessary, I think. Once I had intended to insert a control read or something, but without a controller, this isn't needed.
 void myDelay(unsigned long duration) {
 	for (unsigned long i = 0; i < duration; i++) {
 		FastLED.delay(1);
