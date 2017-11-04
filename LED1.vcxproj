@@ -47,8 +47,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\libraries\FastLED-3.1.3;$(ProjectDir)..\libraries\IRremote;c:\Program Files (x86)\Arduino\libraries;c:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;$(ProjectDir)..\libraries;c:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;c:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\LED1;c:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\;c:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr\;c:\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>$(ProjectDir)__vm\.LED1.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\libraries\FastLED-3.1.3;c:\Program Files (x86)\Arduino\libraries;c:\Program Files (x86)\Arduino\hardware\arduino\avr\libraries;$(ProjectDir)..\libraries;c:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino;c:\Program Files (x86)\Arduino\hardware\arduino\avr\variants\standard;$(ProjectDir)..\Nightlight;c:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\;c:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr\;c:\Program Files (x86)\Arduino\hardware\tools\avr\lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)__vm\.Nightlight.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>__AVR_ATmega328p__;__AVR_ATmega328P__;_VMDEBUG=1;F_CPU=16000000L;ARDUINO=10800;ARDUINO_AVR_UNO;ARDUINO_ARCH_AVR;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.LED1.vsarduino.h" />
+    <ClInclude Include="__vm\.Nightlight.vsarduino.h" />
   </ItemGroup>
   <PropertyGroup>
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
@@ -89,7 +90,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties arduino.build.auto_discover_includes="0" arduino.upload.port="COM4" />
+      <UserProperties arduino.build.auto_discover_includes="0" arduino.upload.port="COM3" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

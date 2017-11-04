@@ -1,18 +1,12 @@
-// TODO: Day and night cycle
-// TODO: Cars have a color and a taillight
-// TODO: Cars leave a space between
-// TODO: Traffic lights are only 1
-// TODO: Head/taillights glow brighter at night
-// TODO: Do we even need FastLED.show()? The new ones don't have it, but they work?!
-// TODO: Hearbeat mode
+// TODO: Figure out why the hell it crashes. Hint: use GOFAST
+// TODO: Heartbeat mode
 // TODO: Get rid of my clear and use FastLED.clear()?
+// TODO: Do a sort by cycle index so when the flashing is in order it's a sine wave or something, but they start out shuffled. Hash lookup.
 
-#include <IRremoteInt.h>
-#include <IRremote.h>
 #include <FastLED-3.1.3\FastLED.h>
 
 // For debugging, uncomment this line
-#define GOFAST
+//#define GOFAST
 
 // LED OBJECTS
 #define NUM_LEDS 50
@@ -30,10 +24,6 @@ CRGB leds[NUM_LEDS];
 CHSV HSVleds[NUM_LEDS];
 //int lastLED;
 uint8_t	globalBrightness = 8;
-// IR OBJECTS
-#define RECEIVER_PIN 11
-IRrecv irrecv(RECEIVER_PIN);     // create instance of 'irrecv'
-decode_results results;      // create instance of 'decode_results'
 
 // UTILITY OBJECTS
 char debugString[1024];
@@ -45,11 +35,27 @@ void setup()
 	// Add the LEDs so FastLED knows about them. Duh.
 	FastLED.addLeds<WS2811, DATA_PIN>(leds, NUM_LEDS);
 
+	// The best way to really get a different random number seed every time, 
+	// since Arduinos don't ship with radioactive particles...
+	randomSeed(analogRead(0) && analogRead(1) && analogRead (2) && analogRead(3) && analogRead(4) && analogRead(5));
+
 	//Serial.begin(9600);
 	//Serial.println("IR Receiver Button Decode");
 	//irrecv.enableIRIn(); // Start the receiver
 	dim();
 	dimCounter = 4;
+}
+
+int availableMemory() {
+	int size = 1024; // Use 2048 with ATmega328
+	byte *buf;
+
+	while ((buf = (byte *)malloc(--size)) == NULL)
+		;
+
+	free(buf);
+
+	return size;
 }
 
 void loop()
@@ -59,49 +65,53 @@ void loop()
 	//	exit(0);
 	//}
 
+	random16_add_entropy(random());
+
 	switch (random8(0, 5)) {
 	case 0:
 		// Hostile streetlights
-		Serial.println("Doing street");
+		//Serial.println("Doing street");
 		doCityStreet();
 		break;
 	case 1:
 		// Random color flickering
-		Serial.println("Doing rando");
+		//Serial.println("Doing rando");
 		doRando();
 		break;
 	case 2:
 		// Fibonacci march
-		Serial.println("Doing Fib");
+		//Serial.println("Doing Fib");
 		doFibonacciMarch();
 		break;
 	case 3:
 		// Boolean Sort
-		Serial.println("Doing Swap sort");
+		//Serial.println("Doing Swap sort");
 		doSwapSort();
 		break;
 	case 4:
 		// Man of the hour!
-		Serial.println("Doing Pac Man");
+		//Serial.println("Doing Pac Man");
 		doPacMan();
 		break;
 	}
-	Serial.println("Dim counter then brightness, twice:");
-	Serial.println(dimCounter);
-	Serial.println(globalBrightness);
 	if (!--dimCounter) {
 		dimCounter = 4;
 		dim();
 	}
-	Serial.println(dimCounter);
-	Serial.println(globalBrightness);
+	//Serial.print("Available memory: ");
+	//Serial.println(availableMemory());
 }
 
 void dim() {
 	globalBrightness--;
+	//Serial.print("Dimmed, brightness is ");
+	//Serial.println(globalBrightness);
 	if (globalBrightness <= 0) {
-		Serial.println("Done! Clearingout!");
-		clear();
+		//Serial.println("Done! Clearingout!");
+		//Serial.println("...");
+		Serial.println();
+		FastLED.clear(true);
+		FastLED.delay(1000);
 		exit(0);
 	}
 	FastLED.setBrightness(globalBrightness);
@@ -139,7 +149,7 @@ int numOfCars = 0;
 bool thisCarShouldMove;
 void doCityStreet() {
 	// Draw the traffic lights
-	clear();
+	FastLED.clear(true);
 	int i;
 	for (i = 0; i < NUM_OF_TRAFFIC_LIGHTS; i++) {
 		lightTimer[i] = random(0, RED_DURATION + YELLOW_DURATION + GREEN_DURATION);
@@ -173,7 +183,7 @@ void doCityStreet() {
 			}
 			carDelay = random(CAR_MIN_SPAWN, CAR_MAX_SPAWN);
 		}
-		clear();
+		FastLED.clear(true);
 		moveCars();
 		drawCars();
 		drawLights();
@@ -220,9 +230,23 @@ void drawCars() {
 void drawLights() {
 	for (int i = 0; i < NUM_OF_TRAFFIC_LIGHTS; i++)
 	{
-		leds[lightIndex[i]] = (lightColor[i] == TLGreen) ? CRGB::Green : CRGB(0, 10, 0);
-		leds[lightIndex[i] + 1] = (lightColor[i] == TLYellow) ? CRGB::Yellow : CRGB(10, 10, 0);
-		leds[lightIndex[i] + 2] = (lightColor[i] == TLRed) ? CRGB::Red : CRGB(10, 0, 0);
+		switch (lightColor[i])
+		{
+		case TLGreen:
+			leds[lightIndex[i]] = CRGB::Green;
+			break;
+		case TLYellow:
+			leds[lightIndex[i]] = CRGB::Yellow;
+			break;
+		case TLRed:
+			leds[lightIndex[i]] = CRGB::Red;
+			break;
+		default:
+			break;
+		}
+		//leds[lightIndex[i]] = (lightColor[i] == TLGreen) ? CRGB::Green : CRGB(0, 10, 0);
+		//leds[lightIndex[i] + 1] = (lightColor[i] == TLYellow) ? CRGB::Yellow : CRGB(10, 10, 0);
+		//leds[lightIndex[i] + 2] = (lightColor[i] == TLRed) ? CRGB::Red : CRGB(10, 0, 0);
 	}
 }
 
@@ -244,14 +268,13 @@ void doPacMan() {
 	int pac, ghosts[4], frameFlipper;
 	CRGB ghostColor1, ghostColor2, pacColorMouth;
 	bool ghostIsEaten[4];
-	clear();
+	FastLED.clear(true);
 	for (j = 0; j < 255; j++) {
 		for (i = 0; i < NUM_LEDS; i++) {
 			if (!(i % 2)) {
 				leds[i] = CRGB(j, j, j);
 			}
 		}
-		FastLED.show();
 		FastLED.delay(PACMAN_MOVE_SPEED);
 	}
 	FastLED.delay(PACMAN_APPEAR_DELAY);
@@ -260,11 +283,9 @@ void doPacMan() {
 
 	// appear
 	leds[0] = CRGB::Yellow;
-	FastLED.show();
 	FastLED.delay(PACMAN_MOVE_SPEED);
 
 	leds[1] = CRGB::Yellow;
-	FastLED.show();
 	FastLED.delay(PACMAN_MOVE_SPEED);
 
 	for (i = 1; i < NUM_LEDS - 1; i++) {
@@ -272,19 +293,15 @@ void doPacMan() {
 		// TODO  - the front one should wobble as if the mouth is open/closing
 		leds[i + 1] = CRGB::Yellow;
 		leds[i - 1] = CRGB::Black;
-		FastLED.show();
 		FastLED.delay(PACMAN_MOVE_SPEED);
 		leds[i + 1] = CRGB::Black;
-		FastLED.show();
 		FastLED.delay(PACMAN_MOVE_SPEED);
 	}
 
 	leds[NUM_LEDS - 2] = CRGB::Black;
-	FastLED.show();
 	FastLED.delay(PACMAN_MOVE_SPEED);
 
 	leds[NUM_LEDS - 1] = CRGB::Black;
-	FastLED.show();
 	FastLED.delay(PACMAN_MOVE_SPEED);
 
 	// tense pause...
@@ -354,7 +371,6 @@ void doPacMan() {
 			leds[i + j] = CRGB::Plaid;
 		}
 
-		FastLED.show();
 		FastLED.delay(PACMAN_MOVE_SPEED);
 
 		// Mouth closed
@@ -363,7 +379,6 @@ void doPacMan() {
 			leds[i + j] = CRGB::Black;
 		}
 
-		FastLED.show();
 		FastLED.delay(PACMAN_MOVE_SPEED);
 	} // END Ghosts chase Pac
 
@@ -381,7 +396,7 @@ void doPacMan() {
 	frameFlipper = 0;
 	ghostIsEaten[0] = ghostIsEaten[1] = ghostIsEaten[2] = ghostIsEaten[3] = false;
 	do {
-		clear();
+		FastLED.clear(true);
 
 		if (!(frameFlipper % 2)) {
 			ghostColor1 = CRGB::DarkBlue;
@@ -422,7 +437,6 @@ void doPacMan() {
 			leds[pac + 1] = pacColorMouth;
 		}
 
-		FastLED.show();
 		FastLED.delay(PACMAN_MOVE_SPEED);
 
 		// Update
@@ -478,7 +492,6 @@ void doSwapSort() {
 		//	HSVleds[i].s, HSVleds[i].v);
 		//Serial.println(debugString);
 	}
-	FastLED.show();
 
 
 	// Now go through the list until we find nothing to swap
@@ -492,7 +505,6 @@ void doSwapSort() {
 				//	i, HSVleds[i].h, HSVleds[i + 1].h);
 				//Serial.println(debugString);
 				HSVswapTwo(i, i + 1);
-				FastLED.show();
 				FastLED.delay(SWAPSORT_DELAY);
 			}
 		}
@@ -511,28 +523,23 @@ void doSwapSort() {
 #endif
 #define FIB_NUM_OF_BLANKS_BETWEEN 2
 void doFibonacciMarch() {
-	FastLED.clear();
-	FastLED.show();
+	FastLED.clear(true);
 	int numbers[2], fibnum, i;
 	uint8_t index;
 	numbers[0] = 1;
 	numbers[1] = 1;
 	fibnum = 2;
 	leds[0] = ColorFromPalette(RainbowColors_p, 11);
-	FastLED.show();
 	FastLED.delay(FIB_DELAY);
 	for (i = 0; i < FIB_NUM_OF_BLANKS_BETWEEN; i++) {
 		shiftUp();
-		FastLED.show();
 		FastLED.delay(FIB_DELAY);
 	}
 	shiftUp();
 	leds[0] = ColorFromPalette(RainbowColors_p, 15);
-	FastLED.show();
 	FastLED.delay(FIB_DELAY);
 	for (i = 0; i < FIB_NUM_OF_BLANKS_BETWEEN; i++) {
 		shiftUp();
-		FastLED.show();
 		FastLED.delay(FIB_DELAY);
 	}
 	do {
@@ -542,12 +549,10 @@ void doFibonacciMarch() {
 			//Serial.println(debugString);
 			shiftUp();
 			leds[0] = ColorFromPalette(RainbowColors_p, index);
-			FastLED.show();
 			FastLED.delay(FIB_DELAY);
 		}
 		for (i = 0; i < FIB_NUM_OF_BLANKS_BETWEEN + (fibnum / 3); i++) {
 			shiftUp();
-			FastLED.show();
 			FastLED.delay(FIB_DELAY);
 		}
 		numbers[0] = numbers[1];
@@ -556,7 +561,6 @@ void doFibonacciMarch() {
 	} while (fibnum < NUM_LEDS);
 	for (i = 0; i < NUM_LEDS; i++) {
 		shiftUp();
-		FastLED.show();
 		FastLED.delay(FIB_DELAY);
 	}
 }
@@ -626,17 +630,6 @@ void inttolitend(uint32_t x, uint8_t *lit_int) {
 	lit_int[1] = (uint8_t)(x >> 8);
 	lit_int[2] = (uint8_t)(x >> 16);
 	lit_int[3] = (uint8_t)(x >> 24);
-}
-
-void clear() {
-	fill_solid(leds, NUM_LEDS, CRGB::Black);
-}
-
-// TODO This is comPLETEly unnecessary, I think. Once I had intended to insert a control read or something, but without a controller, this isn't needed.
-void myDelay(unsigned long duration) {
-	for (unsigned long i = 0; i < duration; i++) {
-		FastLED.delay(1);
-	}
 }
 
 void blendToColor(int targetR, int targetG, int targetB) {

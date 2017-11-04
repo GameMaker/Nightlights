@@ -11,16 +11,13 @@ C:\Users\pounc\AppData\Local\Temp\VMBuilds\LED1\uno\Debug\LED1.cpp.o: \
  c:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/USBAPI.h \
  c:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
  c:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\standard/pins_arduino.h \
- d:\Dropbox\AJC\Arduino\libraries\IRremote/IRremoteInt.h \
- c:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
- d:\Dropbox\AJC\Arduino\libraries\IRremote/IRremote.h \
- d:\Dropbox\AJC\Arduino\libraries\IRremote/IRremoteInt.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\FastLED.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\cpp_compat.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\FastLED.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\fastled_config.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\led_sysdefs.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\platforms/avr/led_sysdefs_avr.h \
+ c:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino/Arduino.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\bitswap.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\controller.h \
  d:\Dropbox\AJC\Arduino\Libraries/FastLED-3.1.3\pixeltypes.h \
